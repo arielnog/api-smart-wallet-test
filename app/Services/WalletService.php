@@ -75,6 +75,12 @@ class WalletService
                 ];
             }
 
+            if ($checkPayee->id == auth()->user()->id){
+                return [
+                    'mensagem' => 'Não é possivel fazer está transação com você mesmo.'
+                ];
+            }
+
             $payeerWithdraw = $this->doActionWithWallet($params, $user, $typeTransaction = 2);
             if (!$payeerWithdraw) {
                 DB::rollBack();
