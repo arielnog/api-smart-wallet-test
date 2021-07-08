@@ -59,8 +59,12 @@ Envio
 	"cpf_cnpj": "00433447044",
 	"email": "exemplo@exemplo.com",
 	"password": "12345678",
-	"role": 1
+	"role": 1 
 }
+    
+Tipos de Roles:
+    role: 1 => lojista
+    role: 2 => consumidor
 
 Retorno esperado
 {
