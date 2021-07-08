@@ -13,7 +13,7 @@ class WalletLog extends Model
         'wallet_id',
         'payeer_id',
         'payee_id',
-        'values',
+        'value',
         'type_transaction_id',
         'message'
     ];

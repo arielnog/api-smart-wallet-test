@@ -2,25 +2,20 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\User\UserController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Wallet\WalletController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
 
-Route::group(['prefix' => 'auth'], function ($router) {
-    Route::post('login', [AuthController::class,'login']);
-    Route::post('logout', [AuthController::class,'logout']);
+Route::prefix('auth')->group(function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('create-user', [UserController::class, 'createUser']);
 });
 
-Route::group(['prefix' => 'user'], function ($router) {
-    Route::post('create-user', [UserController::class,'createUser']);
+Route::group(['middleware' => ['jwt']], function () {
+    Route::prefix('wallet')->group(function () {
+        Route::post('do-deposit', [WalletController::class, 'deposit']);
+        Route::post('do-transfer', [WalletController::class, 'transfer']);
+    });
 });
+

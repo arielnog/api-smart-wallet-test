@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Repositories;
+
+use App\Models\User;
 
 class UserRepository
 {
@@ -25,7 +28,7 @@ class UserRepository
             if (isset($params['cpf_cnpj'])) {
                 $user->where('cpf_cnpj', $params['cpf_cnpj']);
             }
-            return $user->with('wallet')->get();
+            return $user->with('wallet')->get()->first();
         } catch (\Exception $exception) {
             return response()->json(['codigo' => $exception->getCode(),
                 'mensagem' => $exception->getMessage()]);
