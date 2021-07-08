@@ -22,8 +22,9 @@ class UserController extends Controller
         try {
             $user = $this->userService->store($request->all());
             return $user;
-        } catch (HttpClientException $exception) {
-            return response()->json($exception->getMessage());
+        } catch (\Exception $exception) {
+            return response()->json(['codigo' => $exception->getCode(),
+                'mensagem' => $exception->getMessage()]);
         }
     }
 }
