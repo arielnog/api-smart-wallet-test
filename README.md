@@ -17,6 +17,15 @@ Dentro do arquivo ".env" complete a seguinte configuração de acordo com seu ba
 * DB_USERNAME=root
 * DB_PASSWORD=
 
+Para teste do envio de e-email, é sugerido criar uma conta no <a href="https://mailtrap.io/">Mailtrap<a/> e substituir as variaveis de ambiente, exemplo:
+
+* MAIL_MAILER=smtp
+* MAIL_HOST=smtp.mailtrap.io
+* MAIL_PORT=2525
+* MAIL_USERNAME=eda6942abdc20a
+* MAIL_PASSWORD=7d4bdc7da1f093
+* MAIL_ENCRYPTION=tls
+
 ### Proximo passo
 
 ``` bash
