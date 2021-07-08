@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Notifications\TransactionNotify;
 use App\Repositories\WalletLogRepository;
 use App\Repositories\WalletRepository;
 use App\Services\UserService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class WalletService
 {
@@ -27,7 +29,7 @@ class WalletService
 
     public function getBalance($userId)
     {
-        return $this->walletRepositoryLog->getBalance($userId);
+        return $this->walletLogRepository->getBalance($userId);
     }
 
     public function doDeposit($params, $user)
@@ -41,19 +43,30 @@ class WalletService
                     'mensagem' => 'Erro pra fazer o deposito'
                 ];
             }
+
             DB::commit();
+
+            if ($this->checkEmailAuthorization()) {
+                return [
+                    'mensagem' => 'Erro ao enviar o email'
+                ];
+            }
+
+            $user->notify(new TransactionNotify($doDeposit));
+
+            return ['mensagem' => 'Deposito realizado com sucesso'];
         });
     }
 
-    public function doTransfer($params, $payeer)
+    public function doTransfer($params, $user)
     {
-        return DB::transaction(function () use ($params, $payeer) {
-             $valueBalance = $this->walletLogRepository->getBalance($payeer->id);
-             if ($valueBalance < $params['value'] && $valueBalance <= '0') {
-                 return [
-                     'mensagem' => 'Você não possui saldo suficiente pra fazer a transferencia'
-                 ];
-             }
+        return DB::transaction(function () use ($params, $user) {
+            $valueBalance = $this->walletLogRepository->getBalance($user->id);
+            if ($valueBalance < $params['value'] && $valueBalance <= '0') {
+                return [
+                    'mensagem' => 'Você não possui saldo suficiente pra fazer a transferencia'
+                ];
+            }
 
             $checkPayee = $this->userService->getUser($params);
             if (empty($checkPayee)) {
@@ -62,7 +75,7 @@ class WalletService
                 ];
             }
 
-            $payeerWithdraw = $this->doActionWithWallet($params, $payeer, $typeTransaction = 2);
+            $payeerWithdraw = $this->doActionWithWallet($params, $user, $typeTransaction = 2);
             if (!$payeerWithdraw) {
                 DB::rollBack();
                 return [
@@ -80,14 +93,26 @@ class WalletService
 
             DB::commit();
 
+            if ($this->checkEmailAuthorization()) {
+                return [
+                    'mensagem' => 'Erro ao enviar o email'
+                ];
+            }
+
+            $user->notify(new TransactionNotify($payeerWithdraw));
+            $checkPayee->notify(new TransactionNotify($payeeDeposit));
+
             return ['mensagem' => 'Transferencia realizada com sucesso'];
         });
-
-        return ['mensagem' => 'Seu usuário não tem permissão de executar este recurso'];
     }
 
     public function doActionWithWallet($params, $user, $operation)
     {
+        if ($this->checkActionAuthorization()) {
+            return [
+                'mensagem' => 'Essa operação não foi autorizada.'
+            ];
+        }
         $paramsLog = [
             'wallet_id' => $user->wallet[0]->id,
             'type_transaction_id' => $operation,
@@ -103,5 +128,24 @@ class WalletService
         return $this->walletLogRepository->store($paramsLog);
     }
 
+
+    public function checkEmailAuthorization()
+    {
+        $authorization = Http::get('http://o4d9z.mocklab.io/notify');
+
+        if (!$authorization->json()['message'] == "Success") {
+            return true;
+        }
+        return false;
+    }
+
+    public function checkActionAuthorization()
+    {
+        $authorization = Http::get('https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6');
+        if (!$authorization->json()['message'] == "Autorizado") {
+            return true;
+        }
+        return false;
+    }
 
 }

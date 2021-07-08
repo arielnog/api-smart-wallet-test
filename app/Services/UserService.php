@@ -14,7 +14,7 @@ class UserService
         $utilService,
         $walletRepository;
 
-    public function __construct(UtilService $utilService, UserRepository $userRepository,WalletRepository $walletRepository)
+    public function __construct(UtilService $utilService, UserRepository $userRepository, WalletRepository $walletRepository)
     {
         $this->userRepository = $userRepository;
         $this->utilService = $utilService;
@@ -67,6 +67,8 @@ class UserService
                     'mensagem' => 'Falha ao criar carteira do usuário'
                 ];
             }
+
+            DB::commit();
 
             return ['mensagem' => 'Usuário Criado com Sucesso!'];
         });

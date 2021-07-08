@@ -14,6 +14,7 @@ Route::prefix('auth')->group(function () {
 
 Route::group(['middleware' => ['jwt']], function () {
     Route::prefix('wallet')->group(function () {
+        Route::get('get-balance',[WalletController::class,'balance']);
         Route::post('do-deposit', [WalletController::class, 'deposit']);
         Route::post('do-transfer', [WalletController::class, 'transfer']);
     });

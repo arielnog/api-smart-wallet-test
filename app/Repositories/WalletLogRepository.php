@@ -31,13 +31,12 @@ class WalletLogRepository
     public function getBalance($userId)
     {
         try {
-            $wallet = $this->walletLog->query();
-
-            if (isset($userId)) {
-                $wallet->where('payeer_id', $userId)
-                    ->orWhere('payee_id', $userId);
-            }
-            return $wallet->get()->sum('value');
+            $wallet = $this->walletLog
+                            ->where('payeer_id', $userId)
+                            ->orWhere('payee_id', $userId)
+                            ->get()
+                            ->sum('value');
+            return $wallet;
         } catch (\Exception $exception) {
             return response()->json(['codigo' => $exception->getCode(),
                 'mensagem' => $exception->getMessage()]);

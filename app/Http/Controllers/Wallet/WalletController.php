@@ -15,12 +15,22 @@ class WalletController extends Controller
         $this->walletService = $walletService;
     }
 
+    public function balance()
+    {
+        try {
+            $balance = $this->walletService->getBalance(auth()->user()->id);
+            return response()->json($balance,200);
+        } catch (HttpResponseException $exception) {
+            return response()->json($exception->getMessage());
+        }
+    }
+
     public function deposit(WalletPostRequest $request)
     {
         $request->validated();
         try {
             $wallet = $this->walletService->doDeposit($request->all(), auth()->user());
-            return response()->json(['mensagem' => 'Deposito realizado com sucesso!'], 200);
+            return response()->json(['mensagem' => 'Deposito realizado com sucesso!'], 201);
         } catch (HttpResponseException $exception) {
             return response()->json($exception->getMessage());
         }
@@ -31,7 +41,7 @@ class WalletController extends Controller
         $request->validated();
         try {
             $wallet = $this->walletService->doTransfer($request->all(), auth()->user());
-            return response()->json($wallet, 200);
+            return response()->json($wallet, 201);
         } catch (HttpResponseException $exception) {
             return response()->json($exception->getMessage());
         }

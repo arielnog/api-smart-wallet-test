@@ -17,4 +17,24 @@ class WalletLog extends Model
         'type_transaction_id',
         'message'
     ];
+
+    public function typeTransaction()
+    {
+        return $this->belongsTo(TypeTransaction::class);
+    }
+
+    public function payeer()
+    {
+        return $this->belongsTo(User::class, 'id', 'payeer_id');
+    }
+
+    public function payee()
+    {
+        return $this->belongsTo(User::class, 'id', 'payee_id');
+    }
+
+    public function wallet()
+    {
+        return $this->belongsTo(Wallet::class);
+    }
 }

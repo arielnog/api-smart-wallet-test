@@ -44,4 +44,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Wallet::class);
     }
 
+    public function walletLogPayee()
+    {
+        return $this->hasMany(WalletLog::class,'payeer_id','id');
+    }
+
+    public function walletLogPayeer()
+    {
+        return $this->hasMany(WalletLog::class,'payee_id','id');
+    }
+
 }
