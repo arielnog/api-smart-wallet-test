@@ -42,7 +42,7 @@ class TransactionNotify extends Notification
         return (new MailMessage)
             ->subject("Operação  - {$this->walletLog->typeTransaction->name}")
             ->greeting("Prezado,")
-            ->line("Foi realizado na sua carteira um {$this->walletLog->typeTransaction->name}, no valor de R$".abs($this->walletLog->value))
+            ->line("Foi realizado na sua carteira um {$this->walletLog->typeTransaction->name}, no valor de R$".number_format(abs($this->walletLog->value),2,',','.'))
             ->from('ariel@example.com', 'Ariel Nogueira');
     }
 
